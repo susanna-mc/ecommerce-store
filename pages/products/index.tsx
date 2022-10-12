@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { products } from '../../database/products';
+import { getProducts } from '../../database/products';
 
 const productStyles = css`
   border-radius: 20px;
@@ -13,7 +13,11 @@ const productStyles = css`
   }
 `;
 
-export default function productsPage(props) {
+type Props = {
+  products: Product[];
+};
+
+export default function productsPage(props: Props) {
   return (
     <>
       <Head>
@@ -26,18 +30,23 @@ export default function productsPage(props) {
 
       {props.products.map((product) => {
         return (
-          <div key={`product-div-${product.id}`} css={productStyles}>
+          <div
+            data-test-id={`products-type-${product.type}`}
+            key={`product-${product.id}`}
+            css={productStyles}
+          >
             <h3>
               <a href={`/products/${product.id}`}> {product.name}</a>
             </h3>
 
             <Image
+              data-test-id="product-image"
               src={`/${product.id}-${product.type}.png`}
               alt={product.alt}
               width="400"
               height="400"
             />
-            <p>{product.alt}</p>
+            <p>{product.description}</p>
           </div>
         );
       })}
@@ -45,7 +54,7 @@ export default function productsPage(props) {
   );
 }
 
-export function getServerSideProps(context) {
+/* export function getServerSideProps(context) {
   const parsedCookies = context.req.cookies.amount
     ? JSON.parse(context.req.cookies.amount)
     : [];
@@ -58,10 +67,25 @@ export function getServerSideProps(context) {
         )?.amount || 0,
     };
   });
+  */
+
+export async function getServerSideProps() {
+  const connectProducts = await getProducts();
 
   return {
     props: {
-      products: productsWithAmount,
+      products: connectProducts,
     },
   };
 }
+
+// export async function getServerSideProps(): Promise<
+//   GetServerSidePropsResult<Props>
+// > {
+//   const connectProducts = await getProducts();
+//   return {
+//     props: {
+//       products: connectProducts,
+//     },
+//   };
+// }

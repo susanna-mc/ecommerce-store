@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
-import { products } from '../database/products';
+import { getProducts } from '../database/products';
 
 const productStyles = css`
   border-radius: 20px;
@@ -14,7 +13,7 @@ const productStyles = css`
   }
 `;
 
-export default function Home() {
+export default function Home(props) {
   return (
     <div>
       <Head>
@@ -29,7 +28,7 @@ export default function Home() {
           a button!"
         </h2>
         <h3>Avaliable Jackalopes</h3>
-        {products.map((product) => {
+        {props.products.map((product) => {
           return (
             <div key={`product-${product.id}`} css={productStyles}>
               <h3>{product.listing}</h3>
@@ -44,6 +43,7 @@ export default function Home() {
             </div>
           );
         })}
+
         {/* <div>
           <div>
             <Image
@@ -92,4 +92,14 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  const connectProducts = await getProducts();
+
+  return {
+    props: {
+      products: connectProducts,
+    },
+  };
 }

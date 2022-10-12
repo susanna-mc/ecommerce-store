@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { products } from '../../database/products';
+import { getProductById } from '../../database/products';
 import { getParsedCookie, setStringifiedCookie } from '../../utils/cookies';
 
 const productStyles = css`
@@ -50,8 +50,8 @@ export default function productPage(props) {
           width="400"
           height="400"
         />
-        <p>{props.product.alt}</p>
-        <p>Price: </p>
+        <p>{props.product.description}</p>
+        <p>Price: {props.product.price} </p>
         <div>
           Add to Cart
           <button
@@ -118,12 +118,11 @@ export function Product(props) {
   return <div> product id: {props.products.id} </div>;
 }
 
-export function getServerSideProps(context) {
+export async function getServerSideProps(context) {
   const productId = parseInt(context.query.productID);
 
-  const foundProduct = products.find((products) => {
-    return products.id === productId;
-  });
+  const foundProduct = await getProductById(productId);
+
   if (typeof foundProduct === 'undefined') {
     context.res.statusCode = 404;
     return {

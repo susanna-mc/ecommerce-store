@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import { products } from '../database/products';
-import { getParsedCookie } from '../utils/cookies';
+import Image from 'next/image';
+import { getProducts } from '../database/products';
 
 export default function Cart(props) {
   return (
@@ -22,10 +22,11 @@ export default function Cart(props) {
   );
 }
 
-export function getServerSideProps(context) {
+export async function getServerSideProps(context) {
   const parsedCookies = context.req.cookies.amount
     ? JSON.parse(context.req.cookies.amount)
     : [];
+  const products = await getProducts();
   const productsWithAmount = products.map((singleProduct) => {
     return {
       ...singleProduct,
