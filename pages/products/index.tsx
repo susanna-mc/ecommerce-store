@@ -3,14 +3,42 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { getProducts } from '../../database/products';
 
+const divStyles = css`
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  padding: 15px;
+`;
 const productStyles = css`
   border-radius: 20px;
   border: 1px solid #ccc;
-  padding: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+  display: flex;
+  flex-direction: column;
 
-  & + & {
-    margin-top: 25px;
+  width: 400px;
+
+  background-color: #e3f6f5;
+  box-shadow: 19px 19px 42px 0px #c2c2c2;
+
+  margin-top: 25px;
+
+  a:hover {
   }
+`;
+
+const imageStyles = css`
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin: 0px;
+
+  border-radius: 25px;
+`;
+
+const h1Styles = css`
+  margin-left: 30px;
 `;
 
 type Props = {
@@ -26,30 +54,40 @@ export default function productsPage(props: Props) {
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
 
-      <h1>Available Jackalopes</h1>
+      <h1 css={h1Styles}>Available Jackalopes</h1>
+      <div css={divStyles}>
+        {props.products.map((product) => {
+          return (
+            <div
+              data-test-id={`products-type-${product.type}`}
+              key={`product-${product.id}`}
+              css={productStyles}
+            >
+              <h2>
+                <a href={`/products/${product.id}`}> {product.name}</a>
+              </h2>
 
-      {props.products.map((product) => {
-        return (
-          <div
-            data-test-id={`products-type-${product.type}`}
-            key={`product-${product.id}`}
-            css={productStyles}
-          >
-            <h3>
-              <a href={`/products/${product.id}`}> {product.name}</a>
-            </h3>
+              <div>
+                <Image
+                  css={imageStyles}
+                  data-test-id="product-image"
+                  src={`/${product.id}-${product.type}.png`}
+                  alt={product.alt}
+                  width="400"
+                  height="400"
+                />
+              </div>
 
-            <Image
-              data-test-id="product-image"
-              src={`/${product.id}-${product.type}.png`}
-              alt={product.alt}
-              width="400"
-              height="400"
-            />
-            <p>{product.description}</p>
-          </div>
-        );
-      })}
+              <p>
+                {' '}
+                <strong> Price: </strong>
+                {product.price}
+              </p>
+              <p>{product.description}</p>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
